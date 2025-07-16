@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "reddit-workflows",
   "private": true,
   "scripts": {
     "build": "turbo run build",
