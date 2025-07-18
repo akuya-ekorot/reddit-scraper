@@ -1,18 +1,18 @@
 # Implementation Plan
 
-- [-] 1. Set up project structure and configuration
-  - [-] 1.1 Create configuration interfaces and default values
+- [x] 1. Set up project structure and configuration
+  - [x] 1.1 Create configuration interfaces and default values
     - Define the RedditScraperConfig interface with all required fields
     - Create a default configuration with initial keywords and settings
     - _Requirements: 5.1, 5.2_
 
-  - [ ] 1.2 Implement configuration loading from environment variables
+  - [x] 1.2 Implement configuration loading from environment variables
     - Create utility functions to load and validate configuration
     - Add support for overriding configuration at runtime
     - _Requirements: 5.1, 5.2_
 
-- [ ] 2. Implement Reddit search functionality
-  - [ ] 2.1 Create Reddit search agent with MCP integration
+- [-] 2. Implement Reddit search functionality
+  - [-] 2.1 Create Reddit search agent with MCP integration
     - Implement agent with instructions for searching Reddit
     - Configure the agent with appropriate model
     - _Requirements: 1.1, 1.2_
