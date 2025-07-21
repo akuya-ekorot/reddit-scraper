@@ -5,26 +5,26 @@ import { openrouter } from "@openrouter/ai-sdk-provider";
 import { mcp } from "../mcp";
 
 export const redditSearchAgent = new Agent({
-	name: "redditSearchAgent",
-	description:
-		"Searches Reddit for posts and comments related to AI agent frameworks and workflow tools",
-	model: openrouter("anthropic/claude-sonnet-4"),
-	tools: await mcp.getTools(),
-	memory: new Memory({
-		storage: new LibSQLStore({
-			url: "file:../../mastra.db",
-		}),
-	}),
-	instructions: `
+  name: "redditSearchAgent",
+  description:
+    "Searches Reddit for posts and comments related to AI agent frameworks and workflow tools",
+  model: openrouter("anthropic/claude-sonnet-4"),
+  tools: await mcp.getTools(),
+  memory: new Memory({
+    storage: new LibSQLStore({
+      url: "file:../../mastra.db",
+    }),
+  }),
+  instructions: `
 You are a Reddit search specialist focused on finding discussions about AI agent frameworks and workflow tools.
 Your task is to search Reddit for posts and comments related to specific AI frameworks and tools.
 
 TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
 
 SEARCH GUIDELINES:
 1. Use the reddit_search_reddit tool to find relevant posts and comments
@@ -36,23 +36,23 @@ SEARCH GUIDELINES:
 });
 
 export const categorizationAgent = new Agent({
-	name: "categorizationAgent",
-	description: `Categorizes Reddit posts as NEGATIVE, ALTERNATIVES, or OTHER based on content`,
-	model: openrouter("anthropic/claude-sonnet-4"),
-	memory: new Memory({
-		storage: new LibSQLStore({
-			url: "file:../../mastra.db",
-		}),
-	}),
-	instructions: `
+  name: "categorizationAgent",
+  description: `Categorizes Reddit posts as NEGATIVE, ALTERNATIVES, or OTHER based on content`,
+  model: openrouter("anthropic/claude-sonnet-4"),
+  memory: new Memory({
+    storage: new LibSQLStore({
+      url: "file:../../mastra.db",
+    }),
+  }),
+  instructions: `
 Analyze each post and categorize it as NEGATIVE, ALTERNATIVES, or OTHER based on content about the keyword.
 
 TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
 
 CATEGORIZATION RULES:
 - NEGATIVE: Complaints, issues, frustrations, criticism, problems
@@ -76,31 +76,31 @@ Output: OTHER
 });
 
 export const reportGenerationAgent = new Agent({
-	name: "reportGenerationAgent",
-	description:
-		"Generates comprehensive reports from categorized Reddit posts across multiple keywords, organizing findings by category and keyword with actionable insights",
-	model: openrouter("anthropic/claude-sonnet-4"),
-	memory: new Memory({
-		storage: new LibSQLStore({
-			url: "file:../../mastra.db",
-		}),
-	}),
-	instructions: `
+  name: "reportGenerationAgent",
+  description:
+    "Generates comprehensive reports from categorized Reddit posts across multiple keywords, organizing findings by category and keyword with actionable insights",
+  model: openrouter("anthropic/claude-sonnet-4"),
+  memory: new Memory({
+    storage: new LibSQLStore({
+      url: "file:../../mastra.db",
+    }),
+  }),
+  instructions: `
 Generate concise daily Reddit analysis reports focusing on essential information only.
 
 TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
 
 CONCISE REPORT STRUCTURE:
 # Reddit Daily Report - ${new Date().toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
 
 ## Summary
 - Total posts: X
@@ -128,25 +128,25 @@ FORMATTING RULES:
 });
 
 export const slackNotificationAgent = new Agent({
-	name: "slackNotificationAgent",
-	description:
-		"Sends formatted Reddit analysis reports to Slack channels using MCP tools",
-	model: openrouter("anthropic/claude-sonnet-4"),
-	tools: await mcp.getTools(),
-	memory: new Memory({
-		storage: new LibSQLStore({
-			url: "file:../../mastra.db",
-		}),
-	}),
-	instructions: `
+  name: "slackNotificationAgent",
+  description:
+    "Sends formatted Reddit analysis reports to Slack channels using MCP tools",
+  model: openrouter("anthropic/claude-sonnet-4"),
+  tools: await mcp.getTools(),
+  memory: new Memory({
+    storage: new LibSQLStore({
+      url: "file:../../mastra.db",
+    }),
+  }),
+  instructions: `
 You are a Slack notification specialist that sends formatted reports to Slack channels.
 
 TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
 
 Your task is to send Reddit analysis reports to the designated Slack channel using the available MCP Slack tools.
 
@@ -163,20 +163,20 @@ FORMATTING GUIDELINES:
 
 MESSAGE STRUCTURE:
 - Header: "📊 Daily Reddit Report - ${new Date().toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}"
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}"
 - Brief summary with post counts
 - List negative posts with titles and links
 - List positive posts with titles and links
 
 EXAMPLE MESSAGE FORMAT:
 📊 *Daily Reddit Report* - ${new Date().toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	})}
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
 
 *Summary:* 12 posts total | 5 Negative | 3 Alternatives | 4 Other
 

@@ -2,9 +2,9 @@ import { validateConfig } from "./config";
 import { logger } from "./logger";
 import { WorkflowScheduler } from "./scheduler";
 
-async function main(hello: string) {
-	try {
-		validateConfig();
+async function main() {
+  try {
+    validateConfig();
 
 		const scheduler = new WorkflowScheduler();
 		await scheduler.start();
@@ -20,13 +20,13 @@ async function main(hello: string) {
 
 		logger.info("Cron scheduler is running. Press Ctrl+C to stop.");
 
-		setInterval(async () => {
-			await scheduler.status();
-		}, 60000);
-	} catch (error: any) {
-		logger.error("Failed to start cron scheduler:", error.message);
-		process.exit(1);
-	}
+    setInterval(async () => {
+      await scheduler.status();
+    }, 60000);
+  } catch (error: unknown) {
+    logger.error("Failed to start cron scheduler:", error);
+    process.exit(1);
+  }
 }
 
 process.on("unhandledRejection", (reason, promise) => {

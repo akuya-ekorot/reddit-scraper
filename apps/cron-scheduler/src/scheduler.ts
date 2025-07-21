@@ -25,25 +25,25 @@ export class WorkflowScheduler {
 			throw new Error(`Invalid cron expression: ${config.cronSchedule}`);
 		}
 
-		this.task = cron.schedule(
-			config.cronSchedule,
-			async () => {
-				const workflow = this.mastraClient.getWorkflow(config.workflowId);
+    this.task = cron.schedule(
+      config.cronSchedule,
+      async () => {
+        const workflow = this.mastraClient.getWorkflow(config.workflowId);
 
-				const { runId } = await workflow.createRun();
+        const { runId } = await workflow.createRun();
 
-				this.runId = runId;
-				this.workflow = workflow;
+        this.runId = runId;
+        this.workflow = workflow;
 
-				await workflow.startAsync({
-					runId,
-					inputData: config.keywords,
-				});
-			},
-			{
-				scheduled: false,
-			},
-		);
+        await workflow.startAsync({
+          runId,
+          inputData: config.keywords,
+        });
+      },
+      {
+        scheduled: false,
+      },
+    );
 
 		this.task.start();
 	}
@@ -59,13 +59,13 @@ export class WorkflowScheduler {
 				inputData: config.keywords,
 			});
 
-			if (result.status === "success") {
-				logger.debug("Workflow result:", result.result);
-			}
-		} catch (error: any) {
-			logger.error(`Workflow execution error:`, error.message);
-		}
-	}
+      if (result.status === "success") {
+        logger.debug("Workflow result:", result.result);
+      }
+    } catch (error: unknown) {
+      logger.error(`Workflow execution error:`, error);
+    }
+  }
 
 	async status() {
 		if (this.runId && this.workflow) {
