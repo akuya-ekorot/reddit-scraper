@@ -1,135 +1,160 @@
-# Turborepo starter
+# Reddit Workflows Project
 
-This Turborepo starter is maintained by the Turborepo core team.
+A monorepo containing Mastra-based Reddit workflows and automated scheduling system.
 
-## Using this example
+## Project Structure
 
-Run the following command:
+This project includes the following applications:
 
-```sh
-npx create-turbo@latest
+### Apps
+
+- **`mastra`**: Main Mastra application containing Reddit workflows, agents, and MCP integrations
+- **`cron-scheduler`**: Automated cron job scheduler that triggers Reddit workflows every 24 hours
+
+## Getting Started
+
+1. **Install Dependencies**:
+   ```bash
+   pnpm install
+   ```
+
+2. **Set up Environment Variables**:
+   - Copy `.env.example` files in each app to `.env`
+   - Configure the required environment variables
+
+3. **Start the Mastra Application**:
+   ```bash
+   cd apps/mastra
+   npm run dev
+   ```
+
+4. **Start the Cron Scheduler** (in a separate terminal):
+   ```bash
+   cd apps/cron-scheduler
+   npm run dev
+   ```
+
+## Applications
+
+### Mastra Application (`apps/mastra`)
+
+Contains the core Reddit workflow implementation with:
+- **Reddit Agent**: Handles Reddit API interactions and content processing
+- **Weather Agent**: Provides weather information for location-based content
+- **Reddit Workflow**: Orchestrates the complete Reddit scraping and processing pipeline
+- **MCP Integration**: Model Context Protocol server for external integrations
+
+### Cron Scheduler (`apps/cron-scheduler`)
+
+Automated scheduling system that:
+- Triggers Reddit workflows every 24 hours (configurable)
+- Monitors Mastra API health
+- Provides comprehensive logging and error handling
+- Supports graceful shutdown and restart
+
+**Key Features:**
+- Configurable cron schedules
+- API health monitoring
+- Structured logging
+- Error recovery
+- Environment-based configuration
+
+## Configuration
+
+### Mastra Application
+See `apps/mastra/README.md` for detailed configuration options.
+
+### Cron Scheduler
+Key environment variables:
+- `MASTRA_API_URL`: URL of the running Mastra API (default: http://localhost:4000)
+- `WORKFLOW_ID`: ID of the workflow to trigger (default: reddit-workflow)
+- `CRON_SCHEDULE`: Cron expression for scheduling (default: "0 0 * * *" - daily at midnight)
+- `LOG_LEVEL`: Logging level (error, warn, info, debug)
+
+## Development
+
+### Build All Applications
+```bash
+pnpm build
 ```
 
-## What's inside?
+### Run Specific Application
+```bash
+# Run Mastra in development mode
+pnpm --filter mastra dev
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Run cron scheduler in development mode
+pnpm --filter cron-scheduler dev
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+### Test Integration
+```bash
+# Test cron scheduler integration with Mastra API
+cd apps/cron-scheduler
+npm run test
 ```
 
-### Develop
+## Workflow Architecture
 
-To develop all apps and packages, run the following command:
+1. **Mastra Application** runs the Reddit workflow server
+2. **Cron Scheduler** triggers workflows on a schedule via HTTP API calls
+3. **Reddit Agent** processes Reddit content and interactions
+4. **Weather Agent** provides contextual weather information
+5. **MCP Server** enables external tool integrations
 
-```
-cd my-turborepo
+## API Integration
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+The cron scheduler integrates with Mastra using these endpoints:
+- `GET /api` - Health check
+- `GET /api/networks` - List available workflows
+- `POST /api/networks/{networkId}/generate` - Trigger workflow execution
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+## Monitoring and Logging
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+Both applications provide structured logging with:
+- Timestamped log entries
+- Configurable log levels
+- Error tracking and reporting
+- Performance metrics
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+## Production Deployment
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+1. Build all applications:
+   ```bash
+   pnpm build
+   ```
 
-### Remote Caching
+2. Start Mastra application:
+   ```bash
+   cd apps/mastra && npm start
+   ```
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+3. Start cron scheduler:
+   ```bash
+   cd apps/cron-scheduler && npm start
+   ```
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## Troubleshooting
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### Common Issues
 
-```
-cd my-turborepo
+1. **Connection Refused**: Ensure Mastra application is running before starting the cron scheduler
+2. **Workflow Not Found**: Verify the `WORKFLOW_ID` matches an existing network in Mastra
+3. **Cron Not Triggering**: Validate cron expressions using online validators
+4. **API Errors**: Check Mastra application logs for detailed error information
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+### Logs Location
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+- **Mastra**: Console output with structured logging
+- **Cron Scheduler**: Console output with timestamped entries
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Contributing
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+1. Follow the existing code structure and patterns
+2. Add appropriate error handling and logging
+3. Update documentation for new features
+4. Test integrations thoroughly
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+## License
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+MIT

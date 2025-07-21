@@ -1,48 +1,194 @@
 import { Agent } from "@mastra/core/agent";
+import { LibSQLStore } from "@mastra/libsql";
+import { Memory } from "@mastra/memory";
 import { openrouter } from "@openrouter/ai-sdk-provider";
+import { mcp } from "../mcp";
+
+export const redditSearchAgent = new Agent({
+	name: "redditSearchAgent",
+	description:
+		"Searches Reddit for posts and comments related to AI agent frameworks and workflow tools",
+	model: openrouter("anthropic/claude-sonnet-4"),
+	tools: await mcp.getTools(),
+	memory: new Memory({
+		storage: new LibSQLStore({
+			url: "file:../../mastra.db",
+		}),
+	}),
+	instructions: `
+You are a Reddit search specialist focused on finding discussions about AI agent frameworks and workflow tools.
+Your task is to search Reddit for posts and comments related to specific AI frameworks and tools.
+
+TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}
+
+SEARCH GUIDELINES:
+1. Use the reddit_search_reddit tool to find relevant posts and comments
+2. Focus on recent content (past 24 hours by default)
+3. Always include the original post
+4. Do not explain what you're doing, just return the results
+5. Use today's date context when searching for recent posts
+`,
+});
 
 export const categorizationAgent = new Agent({
 	name: "categorizationAgent",
-	model: openrouter("moonshotai/kimi-k2"),
+	description: `Categorizes Reddit posts as NEGATIVE, ALTERNATIVES, or OTHER based on content`,
+	model: openrouter("anthropic/claude-sonnet-4"),
+	memory: new Memory({
+		storage: new LibSQLStore({
+			url: "file:../../mastra.db",
+		}),
+	}),
 	instructions: `
-Analyze each post for negative sentiment about langgraph, from the reddit tools, people looking for alternatives, or other mentions. Categorize each post and provide a brief explanation.
+Analyze each post and categorize it as NEGATIVE, ALTERNATIVES, or OTHER based on content about the keyword.
 
-Categorize each post as either NEGATIVE, ALTERNATIVES, or OTHER based on its content. Only return posts that fall into one of these categories. Always include the original. Include the URL of the original post or comment as well.
+TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}
+
+CATEGORIZATION RULES:
+- NEGATIVE: Complaints, issues, frustrations, criticism, problems
+- ALTERNATIVES: Seeking alternatives, asking for other options, comparing tools
+- OTHER: General discussions, questions, neutral mentions, positive content
+
+Always include the original post content, title, and link.
 
 Example 1:
-
-Input: 'I tried using langgraph but it kept crashing. The documentation is confusing and I wasted hours trying to make it work.'
-
-Output: 'NEGATIVE - This post criticizes langgraph for stability issues, poor documentation, and causing frustration.
-
-Original post: I tried using langgraph but it kept crashing. The documentation is confusing and I wasted hours trying to make it work.
-
-Link: https://www.reddit.com/r/LangChain/comments/1jttg4o/research_ai_agent_individually_google_each/'
+Input: 'I tried using langgraph but it kept crashing. The documentation is confusing.'
+Output: NEGATIVE
 
 Example 2:
-
-Input: 'Are there any good alternatives to langgraph? It's too complex for my needs and I'm looking for something simpler.'
-
-Output: 'ALTERNATIVES - This post indicates the user is seeking langgraph alternatives because they find it too complex.
-
-Original post: Are there any good alternatives to langgraph? It's too complex for my needs and I'm looking for something simpler.
-
-Link: https://www.reddit.com/r/LangChain/comments/1jttg4o/research_ai_agent_individually_google_each/'
+Input: 'Are there any good alternatives to langgraph? It's too complex for my needs.'
+Output: ALTERNATIVES
 
 Example 3:
+Input: 'How do I set up edges between nodes in langgraph?'
+Output: OTHER
+`,
+});
 
-Input post: 'How do I properly set up edges between nodes in langgraph? I'm confused about the syntax.'Output: '
+export const reportGenerationAgent = new Agent({
+	name: "reportGenerationAgent",
+	description:
+		"Generates comprehensive reports from categorized Reddit posts across multiple keywords, organizing findings by category and keyword with actionable insights",
+	model: openrouter("anthropic/claude-sonnet-4"),
+	memory: new Memory({
+		storage: new LibSQLStore({
+			url: "file:../../mastra.db",
+		}),
+	}),
+	instructions: `
+Generate concise daily Reddit analysis reports focusing on essential information only.
 
-OTHER - This is a technical question about using langgraph edges, not negative feedback or seeking alternatives.
+TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}
 
-Original post: How do I properly set up edges between nodes in langgraph? I'm confused about the syntax.
+CONCISE REPORT STRUCTURE:
+# Reddit Daily Report - ${new Date().toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}
 
-Link: https://www.reddit.com/r/LangChain/comments/1jttg4o/research_ai_agent_individually_google_each/'
+## Summary
+- Total posts: X
+- Negative: X | Alternatives: X | Other: X
 
-Example 4:
+## NEGATIVE Posts
+- *[Post Title]* - [Link]
+  Original: [Brief excerpt]
 
-Input post: 'Langgraph has been helpful for my project. I like how it structures agent workflows.'
+## ALTERNATIVES Posts
+- *[Post Title]* - [Link]
+  Original: [Brief excerpt]
 
-Output: (No output since this is positive)
+## OTHER Posts  
+- *[Post Title]* - [Link]
+  Original: [Brief excerpt]
+
+FORMATTING RULES:
+- Keep it short and scannable
+- Include only essential information: title, link, brief original post excerpt
+- No lengthy analysis or insights
+- Use bullet points for easy reading
+- Focus on actionable posts that need attention
+`,
+});
+
+export const slackNotificationAgent = new Agent({
+	name: "slackNotificationAgent",
+	description:
+		"Sends formatted Reddit analysis reports to Slack channels using MCP tools",
+	model: openrouter("anthropic/claude-sonnet-4"),
+	tools: await mcp.getTools(),
+	memory: new Memory({
+		storage: new LibSQLStore({
+			url: "file:../../mastra.db",
+		}),
+	}),
+	instructions: `
+You are a Slack notification specialist that sends formatted reports to Slack channels.
+
+TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}
+
+Your task is to send Reddit analysis reports to the designated Slack channel using the available MCP Slack tools.
+
+SLACK CONFIGURATION:
+- Use the SLACK_CHANNEL_IDS environment variable to get the target channel ID
+- The channel ID is: ${process.env.SLACK_CHANNEL_ID || "C0961N79V6K"}
+- Send the complete report as a formatted message
+
+FORMATTING GUIDELINES:
+1. Keep messages concise and scannable for daily reports
+2. Use Slack markdown for readability - IMPORTANT: Use single asterisks (*text*) for bold formatting, not double asterisks
+3. Focus on actionable posts that need immediate attention
+4. Use simple bullet points and clear headers
+
+MESSAGE STRUCTURE:
+- Header: "📊 Daily Reddit Report - ${new Date().toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}"
+- Brief summary with post counts
+- List negative posts with titles and links
+- List positive posts with titles and links
+
+EXAMPLE MESSAGE FORMAT:
+📊 *Daily Reddit Report* - ${new Date().toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	})}
+
+*Summary:* 12 posts total | 5 Negative | 3 Alternatives | 4 Other
+
+*🔴 NEGATIVE Posts:*
+• *[Post Title]* - [Link]
+
+*🔄 ALTERNATIVES Posts:*
+• *[Post Title]* - [Link]
+
+*⚪ OTHER Posts:*  
+• *[Post Title]* - [Link]
+
+Always use the slack_send_message tool to deliver the report to the specified channel.
 `,
 });

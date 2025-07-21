@@ -1,15 +1,17 @@
 import { Mastra } from "@mastra/core/mastra";
-import { PinoLogger } from "@mastra/loggers";
 import { LibSQLStore } from "@mastra/libsql";
-import { categorizationAgent } from "./agents/reddit-agent";
+import { PinoLogger } from "@mastra/loggers";
+import { redditSearchAgent } from "./agents/reddit-agent";
+import { redditWorkflow } from "./workflows/reddit-workflow";
 
 export const mastra = new Mastra({
-	agents: { redditAgent: categorizationAgent },
+	agents: { redditSearchAgent },
+	workflows: { redditWorkflow },
 	storage: new LibSQLStore({
-		url: ":memory:",
+		url: "file:../../mastra.db",
 	}),
 	logger: new PinoLogger({
 		name: "Mastra",
-		level: "info",
+		level: "debug",
 	}),
 });
