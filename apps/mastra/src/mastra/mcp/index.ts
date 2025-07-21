@@ -1,7 +1,7 @@
 import { MCPClient } from "@mastra/mcp";
 
 if (!process.env.REDDIT_CLIENT_ID || !process.env.REDDIT_CLIENT_SECRET) {
-	throw new Error("Reddit env vars missing");
+  throw new Error("Reddit env vars missing");
 }
 
 if (!process.env.SLACK_BOT_TOKEN) {

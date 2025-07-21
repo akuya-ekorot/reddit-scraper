@@ -22,12 +22,12 @@ export const config = {
 } as const;
 
 export function validateConfig() {
-	const required = ["MASTRA_API_URL", "WORKFLOW_ID"];
-	const missing = required.filter((key) => !process.env[key]);
+  const required = ["MASTRA_API_URL", "WORKFLOW_ID"];
+  const missing = required.filter((key) => !process.env[key]);
 
-	if (missing.length > 0) {
-		throw new Error(
-			`Missing required environment variables: ${missing.join(", ")}`,
-		);
-	}
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missing.join(", ")}`,
+    );
+  }
 }

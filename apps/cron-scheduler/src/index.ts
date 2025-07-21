@@ -6,19 +6,19 @@ async function main() {
   try {
     validateConfig();
 
-		const scheduler = new WorkflowScheduler();
-		await scheduler.start();
+    const scheduler = new WorkflowScheduler();
+    await scheduler.start();
 
-		const shutdown = (signal: string) => {
-			logger.info(`Received ${signal}, shutting down gracefully...`);
-			scheduler.stop();
-			process.exit(0);
-		};
+    const shutdown = (signal: string) => {
+      logger.info(`Received ${signal}, shutting down gracefully...`);
+      scheduler.stop();
+      process.exit(0);
+    };
 
-		process.on("SIGINT", () => shutdown("SIGINT"));
-		process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-		logger.info("Cron scheduler is running. Press Ctrl+C to stop.");
+    logger.info("Cron scheduler is running. Press Ctrl+C to stop.");
 
     setInterval(async () => {
       await scheduler.status();
@@ -30,13 +30,13 @@ async function main() {
 }
 
 process.on("unhandledRejection", (reason, promise) => {
-	logger.error("Unhandled Rejection at:", promise, "reason:", reason);
-	process.exit(1);
+  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
 });
 
 process.on("uncaughtException", (error) => {
-	logger.error("Uncaught Exception:", error);
-	process.exit(1);
+  logger.error("Uncaught Exception:", error);
+  process.exit(1);
 });
 
 main();
