@@ -7,6 +7,7 @@ export const config = {
   workflowId: process.env.WORKFLOW_ID || "reddit-workflow",
   cronSchedule: process.env.CRON_SCHEDULE || "0 0 * * *", // Daily at midnight
   logLevel: process.env.LOG_LEVEL || "info",
+  runImmediately: process.env.RUN_IMMEDIATELY === "true",
   keywords: process.env.WORKFLOW_KEYWORDS
     ? process.env.WORKFLOW_KEYWORDS.split(",").map((word) => ({
         keyword: word.trim(),

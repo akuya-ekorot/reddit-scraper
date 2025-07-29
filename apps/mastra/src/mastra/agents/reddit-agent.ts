@@ -32,6 +32,7 @@ SEARCH GUIDELINES:
 3. Always include the original post
 4. Do not explain what you're doing, just return the results
 5. Use today's date context when searching for recent posts
+6. Focus on people building agents, don't go too deep into Machine Learning, Training, and lower level AI related topics
 `,
 });
 

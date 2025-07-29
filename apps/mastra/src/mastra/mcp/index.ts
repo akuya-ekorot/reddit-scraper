@@ -4,8 +4,12 @@ if (!process.env.REDDIT_CLIENT_ID || !process.env.REDDIT_CLIENT_SECRET) {
   throw new Error("Reddit env vars missing");
 }
 
-if (!process.env.SLACK_BOT_TOKEN) {
-  throw new Error("SLACK_BOT_TOKEN environment variable is required");
+if (
+  !process.env.SLACK_BOT_TOKEN ||
+  !process.env.SLACK_TEAM_ID ||
+  !process.env.SLACK_CHANNEL_IDS
+) {
+  throw new Error("Slack environment variables are required");
 }
 
 export const mcp = new MCPClient({
@@ -23,8 +27,8 @@ export const mcp = new MCPClient({
       args: ["-y", "@modelcontextprotocol/server-slack"],
       env: {
         SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
-        SLACK_TEAM_ID: "T06CB4A5FT9",
-        SLACK_CHANNEL_IDS: "C0961N79V6K",
+        SLACK_TEAM_ID: process.env.SLACK_TEAM_ID,
+        SLACK_CHANNEL_IDS: process.env.SLACK_CHANNEL_IDS,
       },
     },
   },

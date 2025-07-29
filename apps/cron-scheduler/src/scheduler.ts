@@ -15,6 +15,20 @@ export class WorkflowScheduler {
     });
   }
 
+  private async executeWorkflow(): Promise<void> {
+    const workflow = this.mastraClient.getWorkflow(config.workflowId);
+
+    const { runId } = await workflow.createRun();
+
+    this.runId = runId;
+    this.workflow = workflow;
+
+    await workflow.startAsync({
+      runId,
+      inputData: config.keywords,
+    });
+  }
+
   async start(): Promise<void> {
     logger.info("Starting workflow scheduler...");
     logger.info(`Schedule: ${config.cronSchedule}`);
@@ -28,17 +42,7 @@ export class WorkflowScheduler {
     this.task = cron.schedule(
       config.cronSchedule,
       async () => {
-        const workflow = this.mastraClient.getWorkflow(config.workflowId);
-
-        const { runId } = await workflow.createRun();
-
-        this.runId = runId;
-        this.workflow = workflow;
-
-        await workflow.startAsync({
-          runId,
-          inputData: config.keywords,
-        });
+        await this.executeWorkflow();
       },
       {
         scheduled: false,
@@ -46,6 +50,11 @@ export class WorkflowScheduler {
     );
 
     this.task.start();
+
+    if (config.runImmediately) {
+      logger.info("RUN_IMMEDIATELY is true, executing workflow now...");
+      await this.executeWorkflow();
+    }
   }
 
   async status() {
