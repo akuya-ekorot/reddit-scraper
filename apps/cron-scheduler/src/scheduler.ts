@@ -18,7 +18,7 @@ export class WorkflowScheduler {
   private async executeWorkflow(): Promise<void> {
     const workflow = this.mastraClient.getWorkflow(config.workflowId);
 
-    const { runId } = await workflow.createRun();
+    const { runId } = await workflow.createRunAsync();
 
     this.runId = runId;
     this.workflow = workflow;

@@ -17,17 +17,17 @@
     "node": ">=20.9.0"
   },
   "dependencies": {
-    "@mastra/core": "^0.10.15",
-    "@mastra/libsql": "^0.11.0",
-    "@mastra/loggers": "^0.10.3",
-    "@mastra/mcp": "^0.10.6",
-    "@mastra/memory": "^0.11.3",
+    "@mastra/core": "^0.11.1",
+    "@mastra/libsql": "^0.11.2",
+    "@mastra/loggers": "^0.10.4",
+    "@mastra/mcp": "^0.10.7",
+    "@mastra/memory": "^0.11.5",
     "@openrouter/ai-sdk-provider": "^0.7.2",
     "zod": "^3"
   },
   "devDependencies": {
     "@types/node": "^24.0.14",
-    "mastra": "^0.10.13",
+    "mastra": "^0.10.15",
     "typescript": "5.8.3"
   }
 }
