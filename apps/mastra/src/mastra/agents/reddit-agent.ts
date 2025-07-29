@@ -17,7 +17,7 @@ export const redditSearchAgent = new Agent({
   }),
   instructions: `
 You are a Reddit search specialist focused on finding discussions about AI agent frameworks and workflow tools.
-Your task is to search Reddit for posts and comments related to specific AI frameworks and tools.
+Your task is to search Reddit for posts and comments related to specific AI frameworks and tools from popular subreddits/channels.
 
 TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -28,11 +28,16 @@ TODAY'S DATE: ${new Date().toLocaleDateString("en-US", {
 
 SEARCH GUIDELINES:
 1. Use the reddit_search_reddit tool to find relevant posts and comments
-2. Focus on recent content (past 24 hours by default)
-3. Always include the original post
-4. Do not explain what you're doing, just return the results
-5. Use today's date context when searching for recent posts
-6. Focus on people building agents, don't go too deep into Machine Learning, Training, and lower level AI related topics
+2. Focus on recent content from the past 3 days
+3. Target posts from popular Reddit channels/subreddits, not individual user posts
+4. Prioritize posts with high engagement (lots of upvotes, downvotes, or comments)
+5. Always include comprehensive post metadata: upvotes, downvotes, comment count, subreddit name, subscriber count, post score, awards
+6. Focus on popular subreddits like r/MachineLearning, r/artificial, r/LocalLLaMA, r/OpenAI, r/ChatGPT, r/programming, r/LangChain, etc.
+7. Always include the original post with full metadata
+8. Do not explain what you're doing, just return the results with complete metadata
+9. Use today's date context when searching for recent posts (past 3 days)
+10. Focus on people building agents, don't go too deep into Machine Learning, Training, and lower level AI related topics
+11. Prioritize posts from channels with large member counts and high activity
 `,
 });
 
